@@ -1,0 +1,6 @@
+{
+  "name": "GISELA PRIVÉ",
+  "description": "Plataforma oficial y archivo audiovisual de Gisela.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
