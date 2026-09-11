@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Heart, MessageCircle, Play, Share2, Volume2, VolumeX, X, Send, Check, Copy, Music2, CheckCircle2 } from 'lucide-react';
-import { cn } from '../lib/utils';
+import { cn, sanitizeInput, safeCopyText, formatNumber } from '../lib/utils';
 import type { Video, Comment } from '../types';
 import { USER_PROFILE } from '../data';
 
@@ -11,54 +11,6 @@ interface VideoPlayerProps {
   onPause?: () => void;
   onOpenModal?: () => void;
   isModal?: boolean;
-}
-
-function formatNumber(num: number) {
-  if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-  if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-  return num.toString();
-}
-
-/**
- * Security: Sanitize user comment text against HTML/script injection
- */
-function sanitizeInput(text: string): string {
-  return text
-    .replace(/<[^>]*>?/gm, '') // Strip any HTML tags
-    .replace(/javascript:/gi, '')
-    .trim()
-    .slice(0, 280);
-}
-
-function fallbackCopyText(text: string): boolean {
-  try {
-    const textArea = document.createElement('textarea');
-    textArea.value = text;
-    textArea.style.position = 'fixed';
-    textArea.style.left = '-9999px';
-    textArea.style.top = '-9999px';
-    textArea.setAttribute('readonly', '');
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-    const successful = document.execCommand('copy');
-    document.body.removeChild(textArea);
-    return successful;
-  } catch {
-    return false;
-  }
-}
-
-async function safeCopyText(text: string): Promise<boolean> {
-  if (typeof navigator !== 'undefined' && navigator.clipboard && window.isSecureContext) {
-    try {
-      await navigator.clipboard.writeText(text);
-      return true;
-    } catch {
-      return fallbackCopyText(text);
-    }
-  }
-  return fallbackCopyText(text);
 }
 
 export function VideoPlayer({ video, isActive, onPlay, onPause, isModal = false }: VideoPlayerProps) {
