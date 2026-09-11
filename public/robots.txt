@@ -1,4 +1,10 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://gisela.app/sitemap.xml
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Video
+Allow: /
+
+Sitemap: https://giselleweb.pages.dev/sitemap.xml

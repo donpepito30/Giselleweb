@@ -1,12 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Heart, MessageCircle, Play, Share2, Volume2, VolumeX, X, Send, Check, Copy } from 'lucide-react';
+import { Heart, MessageCircle, Play, Share2, Volume2, VolumeX, X, Send, Check, Copy, Music2, CheckCircle2 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import type { Video, Comment } from '../types';
+import { USER_PROFILE } from '../data';
 
 interface VideoPlayerProps {
   video: Video;
   isActive: boolean;
   onPlay: () => void;
+  onPause?: () => void;
   onOpenModal?: () => void;
   isModal?: boolean;
 }
@@ -15,6 +17,17 @@ function formatNumber(num: number) {
   if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
   if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
   return num.toString();
+}
+
+/**
+ * Security: Sanitize user comment text against HTML/script injection
+ */
+function sanitizeInput(text: string): string {
+  return text
+    .replace(/<[^>]*>?/gm, '') // Strip any HTML tags
+    .replace(/javascript:/gi, '')
+    .trim()
+    .slice(0, 280);
 }
 
 function fallbackCopyText(text: string): boolean {
@@ -48,14 +61,17 @@ async function safeCopyText(text: string): Promise<boolean> {
   return fallbackCopyText(text);
 }
 
-export function VideoPlayer({ video, isActive, onPlay, onOpenModal, isModal = false }: VideoPlayerProps) {
+export function VideoPlayer({ video, isActive, onPlay, onPause, isModal = false }: VideoPlayerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(isModal);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
   const [showComments, setShowComments] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
+  const [isNearViewport, setIsNearViewport] = useState(false);
+  const [showHeartBurst, setShowHeartBurst] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   
   // Real-time comment list state
   const [comments, setComments] = useState<Comment[]>(video.commentsList);
@@ -67,13 +83,26 @@ export function VideoPlayer({ video, isActive, onPlay, onOpenModal, isModal = fa
   const [commentsCount, setCommentsCount] = useState(video.baseComments);
   const [hasLiked, setHasLiked] = useState(false);
 
+  // Performance: Lazy-observe player proximity to avoid decoding 25 videos at once
   useEffect(() => {
-    // Emulator: subtle periodic increase in likes to simulate active community
+    if (!containerRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsNearViewport(entry.isIntersecting);
+      },
+      { rootMargin: '400px 0px' }
+    );
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  // Community simulation
+  useEffect(() => {
     const interval = setInterval(() => {
-      if (Math.random() > 0.7) {
+      if (Math.random() > 0.75) {
         setLikes(prev => prev + 1);
       }
-    }, 8000);
+    }, 9000);
     return () => clearInterval(interval);
   }, []);
 
@@ -88,8 +117,21 @@ export function VideoPlayer({ video, isActive, onPlay, onOpenModal, isModal = fa
     if (!isActive && isPlaying && videoRef.current && !isModal) {
       videoRef.current.pause();
       setIsPlaying(false);
+    } else if (isActive && !isPlaying && videoRef.current && isNearViewport) {
+      const playPromise = videoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => setIsPlaying(true))
+          .catch(() => {
+            if (videoRef.current) {
+              videoRef.current.muted = true;
+              setIsMuted(true);
+              videoRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+            }
+          });
+      }
     }
-  }, [isActive, isPlaying, isModal]);
+  }, [isActive, isNearViewport, isPlaying, isModal]);
 
   const handleLike = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -99,6 +141,8 @@ export function VideoPlayer({ video, isActive, onPlay, onOpenModal, isModal = fa
     } else {
       setLikes(prev => prev + 1);
       setHasLiked(true);
+      setShowHeartBurst(true);
+      setTimeout(() => setShowHeartBurst(false), 900);
     }
   };
 
@@ -111,13 +155,14 @@ export function VideoPlayer({ video, isActive, onPlay, onOpenModal, isModal = fa
 
   const handleAddComment = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newComment.trim()) return;
+    const cleanText = sanitizeInput(newComment);
+    if (!cleanText) return;
 
     const added: Comment = {
       id: `new_${Date.now()}`,
-      user: 'tu_usuario',
+      user: 'fan_vip',
       avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80',
-      text: newComment.trim(),
+      text: cleanText,
       time: 'Ahora'
     };
 
@@ -142,6 +187,7 @@ export function VideoPlayer({ video, isActive, onPlay, onOpenModal, isModal = fa
     if (isPlaying) {
       videoRef.current.pause();
       setIsPlaying(false);
+      onPause?.();
     } else {
       onPlay();
       videoRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
@@ -152,60 +198,70 @@ export function VideoPlayer({ video, isActive, onPlay, onOpenModal, isModal = fa
     <div 
       ref={containerRef}
       className={cn(
-        "relative overflow-hidden bg-black flex flex-col group transition-all duration-300 w-full",
+        "relative overflow-hidden bg-zinc-950 flex flex-col group w-full",
         isModal 
           ? "w-full h-full rounded-2xl shadow-2xl ring-1 ring-zinc-800" 
-          : "w-full rounded-none sm:rounded-3xl shadow-2xl sm:ring-1 sm:ring-zinc-800/80 sm:hover:ring-zinc-700/80"
+          : "w-full rounded-none sm:rounded-3xl shadow-2xl border-0 sm:border sm:border-zinc-850"
       )}
     >
       {/* Video Container adapted automatically to full width of screen */}
       <div 
         className="relative w-full cursor-pointer overflow-hidden bg-black flex items-center justify-center select-none h-[calc(100dvh-5rem)] sm:h-[86vh] md:h-[90vh] max-h-[96vh]"
         onClick={togglePlay}
+        onContextMenu={(e) => e.preventDefault()}
       >
-        {/* Ambient blurred backdrop video to fill any widescreen periphery */}
-        <video
-          src={`${video.url}#t=0.001`}
-          loop
-          playsInline
-          muted
-          aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover blur-2xl scale-125 opacity-35 pointer-events-none"
-        />
+        {/* Foreground crystal-clear video with 0 blur and 0 difuminado */}
+        {isNearViewport ? (
+          <video
+            ref={videoRef}
+            src={`${video.url}#t=0.001`}
+            loop
+            playsInline
+            muted={isMuted}
+            preload="auto"
+            controlsList="nodownload"
+            disablePictureInPicture
+            onContextMenu={(e) => e.preventDefault()}
+            className="relative z-1 w-full h-full object-cover pointer-events-none"
+            style={{ filter: 'none', backdropFilter: 'none' }}
+          />
+        ) : (
+          /* Placeholder while far away from viewport for instant 60fps scrolling */
+          <div className="relative z-1 w-full h-full bg-zinc-900 flex items-center justify-center">
+            <div className="h-10 w-10 rounded-full border-2 border-pink-500/30 border-t-pink-500 animate-spin" />
+          </div>
+        )}
 
-        {/* Foreground sharp video automatically adapted to 100% of the screen width */}
-        <video
-          ref={videoRef}
-          src={`${video.url}#t=0.001`}
-          loop
-          playsInline
-          muted={isMuted}
-          preload="metadata"
-          controlsList="nodownload"
-          disablePictureInPicture
-          onContextMenu={(e) => e.preventDefault()}
-          className={cn(
-            "relative z-1 w-full h-full object-cover pointer-events-none transition-transform duration-500",
-            !isPlaying && "scale-[1.01]"
-          )}
-        />
-        
-        {/* Soft Vignette Gradients */}
-        <div className="absolute inset-0 z-2 bg-gradient-to-b from-black/40 via-transparent to-black/85 pointer-events-none" />
+        {/* Double-tap / Like heart burst animation */}
+        {showHeartBurst && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none animate-in zoom-in-50 fade-in duration-300">
+            <div className="p-6 rounded-full bg-gradient-to-tr from-pink-600 to-rose-500 shadow-[0_0_50px_rgba(244,63,94,0.8)] scale-125">
+              <Heart className="h-16 w-16 text-white fill-white animate-bounce" />
+            </div>
+          </div>
+        )}
 
-        {/* Play indicator button */}
+        {/* Crisp play indicator button when paused */}
         <div className={cn(
-          "absolute inset-0 z-5 flex items-center justify-center bg-black/25 transition-opacity duration-300 pointer-events-none",
-          isPlaying ? "opacity-0" : "opacity-100"
+          "absolute inset-0 z-10 flex items-center justify-center bg-black/20 transition-opacity duration-200 pointer-events-none",
+          isPlaying ? "opacity-0 pointer-events-none" : "opacity-100"
         )}>
-          <div className="flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-pink-500/90 shadow-[0_0_35px_rgba(219,39,119,0.6)] backdrop-blur-md transition-transform scale-100 group-hover:scale-105">
-            <Play className="h-8 w-8 sm:h-10 sm:w-10 text-white fill-white ml-1.5" />
+          <div className="flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-pink-600 text-white shadow-2xl transition-transform hover:scale-105 active:scale-95">
+            <Play className="h-8 w-8 sm:h-10 sm:w-10 fill-white ml-1" />
           </div>
         </div>
 
-        {/* Top Controls: Sound toggle */}
-        <div className="absolute top-4 right-4 z-10 pointer-events-auto">
-          {/* Sound toggle */}
+        {/* Top Controls: Sound toggle with Equalizer Bar */}
+        <div className="absolute top-4 right-4 z-20 pointer-events-auto flex items-center gap-2">
+          {/* Audio Equalizer visualizer when sound is unmuted and video is playing */}
+          {!isMuted && isPlaying && (
+            <div className="flex items-end gap-0.5 h-6 px-2.5 py-1 rounded-full bg-black/80 border border-white/20">
+              <span className="w-1 bg-pink-400 rounded-full animate-[equalizer_0.7s_ease-in-out_infinite_alternate]" style={{ height: '60%' }} />
+              <span className="w-1 bg-purple-400 rounded-full animate-[equalizer_0.5s_ease-in-out_infinite_alternate_0.2s]" style={{ height: '90%' }} />
+              <span className="w-1 bg-amber-400 rounded-full animate-[equalizer_0.8s_ease-in-out_infinite_alternate_0.4s]" style={{ height: '75%' }} />
+            </div>
+          )}
+
           <button
             type="button"
             onClick={(e) => {
@@ -214,40 +270,74 @@ export function VideoPlayer({ video, isActive, onPlay, onOpenModal, isModal = fa
             }}
             aria-label={isMuted ? "Activar sonido" : "Silenciar"}
             title={isMuted ? "Activar sonido" : "Silenciar"}
-            className="rounded-full bg-black/55 border border-white/10 p-2.5 text-white backdrop-blur-md transition-all hover:bg-black/80 hover:scale-105 active:scale-95 shadow-md"
+            className="rounded-full bg-black/80 border border-white/20 p-2.5 text-white transition-all hover:bg-black hover:border-pink-500 hover:scale-105 active:scale-95 shadow-lg"
           >
-            {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+            {isMuted ? <VolumeX className="h-4 w-4 text-zinc-300" /> : <Volume2 className="h-4 w-4 text-pink-400" />}
           </button>
         </div>
 
         {/* Floating Copied Notification Toast */}
         {shareCopied && (
-          <div className="absolute top-16 inset-x-0 mx-auto w-fit z-40 flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-600 text-white text-xs font-bold shadow-2xl backdrop-blur-md pointer-events-none transition-all">
+          <div className="absolute top-16 inset-x-0 mx-auto w-fit z-40 flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-600 text-white text-xs font-bold shadow-2xl pointer-events-none transition-all">
             <Check className="h-4 w-4 stroke-[3]" />
             <span>¡Enlace copiado al portapapeles!</span>
           </div>
         )}
 
-        {/* Bottom Content (Natural Description) */}
-        <div className="absolute bottom-0 left-0 w-full p-4 sm:p-6 flex flex-col justify-end z-10 pointer-events-none">
-          <div className="w-[80%] sm:w-[82%] max-w-lg pointer-events-auto">
-            <p className="text-sm sm:text-base font-normal text-white drop-shadow leading-snug">
+        {/* Bottom Content: Clean, professional alignment without any black background */}
+        <div className="absolute bottom-5 sm:bottom-6 left-4 sm:left-6 z-20 pointer-events-auto max-w-[70%] sm:max-w-[75%] text-left">
+          {/* Creator Profile Handle & Verified Badge */}
+          <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
+            <span className="text-sm sm:text-base font-bold text-white tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] [text-shadow:_0_1px_3px_rgba(0,0,0,0.95)] select-text">
+              {USER_PROFILE.handle}
+            </span>
+            <CheckCircle2 className="h-4 w-4 text-pink-500 fill-pink-500/20 shrink-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]" />
+          </div>
+
+          {/* Description text: pure video background, crystal clear readability via typography text shadows */}
+          <div className="relative text-left" onClick={(e) => e.stopPropagation()}>
+            <p 
+              className={cn(
+                "text-xs sm:text-sm text-white/95 leading-relaxed font-normal select-text transition-all duration-200",
+                "drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] [text-shadow:_0_1px_3px_rgba(0,0,0,0.95),_0_2px_8px_rgba(0,0,0,0.9)]",
+                !isExpanded && "line-clamp-2"
+              )}
+            >
               {video.description}
             </p>
+            {video.description.length > 75 && (
+              <button
+                type="button"
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="mt-1 inline-block text-xs font-semibold text-white/90 hover:text-white underline underline-offset-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] [text-shadow:_0_1px_3px_rgba(0,0,0,0.95)] transition-colors focus:outline-none cursor-pointer"
+              >
+                {isExpanded ? "Ver menos" : "Ver más"}
+              </button>
+            )}
+          </div>
+
+          {/* Audio track info line */}
+          <div className="mt-2.5 flex items-center gap-2 text-[11px] sm:text-xs text-white/90 font-medium drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] [text-shadow:_0_1px_3px_rgba(0,0,0,0.95)]">
+            <Music2 className="h-3.5 w-3.5 shrink-0 text-pink-400 animate-[spin_4s_linear_infinite]" />
+            <span className="truncate tracking-wide">Sonido original — {USER_PROFILE.name}</span>
           </div>
         </div>
 
-        {/* Side Interaction Bar */}
-        <div className="absolute bottom-5 right-3.5 sm:right-5 flex flex-col items-center gap-4 sm:gap-5 z-10 pointer-events-auto">
+        {/* Side Interaction Bar with Crisp Buttons (No blur) */}
+        <div className="absolute bottom-5 right-3.5 sm:right-5 flex flex-col items-center gap-4 sm:gap-5 z-20 pointer-events-auto">
           {/* Like */}
           <button onClick={handleLike} className="flex flex-col items-center gap-1 group/btn focus:outline-none">
             <div className={cn(
-              "rounded-full p-3 backdrop-blur-xl border border-white/10 transition-all shadow-xl",
-              hasLiked ? "bg-pink-600/30 border-pink-500/50 scale-110" : "bg-black/50 hover:bg-zinc-850"
+              "rounded-full p-3 border transition-all duration-200 shadow-xl",
+              hasLiked 
+                ? "bg-pink-600 border-pink-400 text-white scale-105 shadow-pink-600/40" 
+                : "bg-black/80 border-white/20 hover:bg-black hover:border-pink-500"
             )}>
-              <Heart className={cn("h-6 w-6 transition-transform active:scale-75", hasLiked ? "text-pink-500 fill-pink-500" : "text-white")} />
+              <Heart className={cn("h-6 w-6 transition-transform active:scale-75", hasLiked ? "text-white fill-white" : "text-white group-hover/btn:text-pink-400")} />
             </div>
-            <span className="text-[11px] font-bold text-white drop-shadow tracking-wide">{formatNumber(likes)}</span>
+            <span className={cn("text-[11px] font-bold drop-shadow tracking-wide", hasLiked ? "text-pink-400" : "text-white")}>
+              {formatNumber(likes)}
+            </span>
           </button>
           
           {/* Comments */}
@@ -255,8 +345,8 @@ export function VideoPlayer({ video, isActive, onPlay, onOpenModal, isModal = fa
             onClick={(e) => { e.stopPropagation(); setShowComments(true); }}
             className="flex flex-col items-center gap-1 group/btn focus:outline-none"
           >
-            <div className="rounded-full bg-black/50 border border-white/10 p-3 backdrop-blur-xl transition-all shadow-xl hover:bg-zinc-800">
-              <MessageCircle className="h-6 w-6 text-white transition-transform active:scale-75" />
+            <div className="rounded-full bg-black/80 border border-white/20 p-3 transition-all duration-200 shadow-xl hover:bg-black hover:border-purple-500 group-hover/btn:scale-105">
+              <MessageCircle className="h-6 w-6 text-white group-hover/btn:text-purple-400 transition-colors active:scale-75" />
             </div>
             <span className="text-[11px] font-bold text-white drop-shadow tracking-wide">{formatNumber(commentsCount)}</span>
           </button>
@@ -268,11 +358,11 @@ export function VideoPlayer({ video, isActive, onPlay, onOpenModal, isModal = fa
             className="flex flex-col items-center gap-1 group/btn focus:outline-none"
             aria-label="Compartir video"
           >
-            <div className="rounded-full bg-black/50 border border-white/10 p-3 backdrop-blur-xl transition-all shadow-xl hover:bg-zinc-800">
+            <div className="rounded-full bg-black/80 border border-white/20 p-3 transition-all duration-200 shadow-xl hover:bg-black hover:border-amber-500 group-hover/btn:scale-105">
               {shareCopied ? (
                 <Check className="h-6 w-6 text-emerald-400" />
               ) : (
-                <Share2 className="h-6 w-6 text-white transition-transform active:scale-75" />
+                <Share2 className="h-6 w-6 text-white group-hover/btn:text-amber-400 transition-colors active:scale-75" />
               )}
             </div>
             <span className="text-[11px] font-bold text-white drop-shadow tracking-wide">
@@ -284,19 +374,21 @@ export function VideoPlayer({ video, isActive, onPlay, onOpenModal, isModal = fa
 
       {/* Slide-up Comments Drawer */}
       <div className={cn(
-        "absolute inset-x-0 bottom-0 z-30 bg-zinc-950/98 backdrop-blur-2xl border-t border-zinc-800/90 rounded-t-3xl transition-transform duration-300 ease-out flex flex-col shadow-2xl",
-        showComments ? "translate-y-0 h-[65%]" : "translate-y-full h-0 pointer-events-none"
+        "absolute inset-x-0 bottom-0 z-30 bg-zinc-950 border-t border-zinc-800 rounded-t-3xl transition-transform duration-300 ease-out flex flex-col shadow-2xl",
+        showComments ? "translate-y-0 h-[68%]" : "translate-y-full h-0 pointer-events-none"
       )}>
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-3.5 border-b border-zinc-800/70 shrink-0">
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/10 shrink-0">
           <div className="flex items-center gap-2">
             <h3 className="text-xs uppercase tracking-wider font-extrabold text-white">Comentarios</h3>
-            <span className="text-xs font-semibold text-pink-400">({formatNumber(commentsCount)})</span>
+            <span className="text-xs font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400">
+              ({formatNumber(commentsCount)})
+            </span>
           </div>
           <button 
             type="button"
             onClick={() => setShowComments(false)} 
-            className="rounded-full bg-zinc-900 p-1.5 text-zinc-400 hover:text-white transition-colors"
+            className="rounded-full bg-zinc-900 p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
           >
             <X className="h-4 w-4" />
           </button>
@@ -305,18 +397,19 @@ export function VideoPlayer({ video, isActive, onPlay, onOpenModal, isModal = fa
         {/* Scrollable list */}
         <div className="flex-1 overflow-y-auto p-4 space-y-3.5 custom-scrollbar">
           {comments.map((comment) => (
-            <div key={comment.id} className="flex items-start gap-3 group/comment">
+            <div key={comment.id} className="flex items-start gap-3 group/comment rounded-2xl p-2 transition-colors hover:bg-white/5">
               <img 
                 src={comment.avatar} 
                 alt={comment.user} 
-                className="h-8 w-8 rounded-full bg-zinc-800 object-cover shrink-0 border border-zinc-700/50" 
+                loading="lazy"
+                className="h-8 w-8 rounded-full bg-zinc-800 object-cover shrink-0 border border-pink-500/30" 
               />
               <div className="flex-1 min-w-0">
                 <div className="flex items-baseline gap-2">
                   <span className="text-xs font-bold text-zinc-200">@{comment.user}</span>
-                  <span className="text-[10px] text-zinc-400">{comment.time}</span>
+                  <span className="text-[10px] text-zinc-500">{comment.time}</span>
                 </div>
-                <p className="text-xs text-zinc-300 mt-0.5 leading-relaxed">{comment.text}</p>
+                <p className="text-xs text-zinc-300 mt-0.5 leading-relaxed break-words">{comment.text}</p>
               </div>
               <button 
                 type="button"
@@ -332,20 +425,21 @@ export function VideoPlayer({ video, isActive, onPlay, onOpenModal, isModal = fa
           ))}
         </div>
 
-        {/* New Comment Input */}
-        <form onSubmit={handleAddComment} className="p-3.5 border-t border-zinc-800/80 bg-zinc-950 shrink-0">
+        {/* New Comment Input with Sanitization & Gradient Button */}
+        <form onSubmit={handleAddComment} className="p-3.5 border-t border-white/10 bg-zinc-950 shrink-0">
           <div className="flex items-center gap-2">
             <input 
               type="text" 
+              maxLength={280}
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               placeholder="Escribe un comentario respetuoso..." 
-              className="flex-1 bg-zinc-900 border border-zinc-800 rounded-full px-4 py-2 text-xs text-white placeholder-zinc-400 focus:outline-none focus:border-pink-500/70 transition-colors"
+              className="flex-1 bg-zinc-900 border border-zinc-800 rounded-full px-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 transition-colors"
             />
             <button 
               type="submit"
               disabled={!newComment.trim()}
-              className="rounded-full bg-pink-600 p-2 text-white disabled:opacity-40 hover:bg-pink-500 transition-colors active:scale-95"
+              className="rounded-full bg-gradient-to-r from-pink-500 to-purple-600 p-2.5 text-white disabled:opacity-40 hover:opacity-90 shadow-md shadow-pink-500/25 transition-all active:scale-95"
             >
               <Send className="h-4 w-4" />
             </button>
@@ -353,15 +447,17 @@ export function VideoPlayer({ video, isActive, onPlay, onOpenModal, isModal = fa
         </form>
       </div>
 
-      {/* Slide-up Share Drawer (100% in-app, completely prevents blank screen/flicker) */}
+      {/* Slide-up Share Drawer */}
       <div className={cn(
-        "absolute inset-x-0 bottom-0 z-35 bg-zinc-950/98 backdrop-blur-2xl border-t border-zinc-800/90 rounded-t-3xl transition-transform duration-300 ease-out flex flex-col shadow-2xl overflow-hidden",
+        "absolute inset-x-0 bottom-0 z-35 bg-zinc-950 border-t border-zinc-800 rounded-t-3xl transition-transform duration-300 ease-out flex flex-col shadow-2xl overflow-hidden",
         showShareModal ? "translate-y-0 max-h-[80%]" : "translate-y-full h-0 pointer-events-none"
       )}>
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-3.5 border-b border-zinc-800/70 shrink-0">
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/10 shrink-0">
           <div className="flex items-center gap-2">
-            <Share2 className="h-4 w-4 text-pink-500" />
+            <div className="p-1 rounded-lg bg-pink-500/15 text-pink-400">
+              <Share2 className="h-4 w-4" />
+            </div>
             <h3 className="text-xs uppercase tracking-wider font-extrabold text-white">Compartir video</h3>
           </div>
           <button 
@@ -379,14 +475,14 @@ export function VideoPlayer({ video, isActive, onPlay, onOpenModal, isModal = fa
           {/* Direct Link Copy */}
           <div className="space-y-1.5">
             <label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
-              Enlace del video
+              Enlace directo
             </label>
-            <div className="flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/90 p-1.5 pr-2">
+            <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-zinc-900/90 p-1.5 pr-2">
               <input 
                 type="text" 
                 readOnly 
                 value={typeof window !== 'undefined' ? window.location.href : ''}
-                className="flex-1 bg-transparent px-2.5 text-xs text-zinc-300 focus:outline-none select-all"
+                className="flex-1 bg-transparent px-3 text-xs text-zinc-300 focus:outline-none select-all"
               />
               <button 
                 type="button"
@@ -397,10 +493,10 @@ export function VideoPlayer({ video, isActive, onPlay, onOpenModal, isModal = fa
                   setTimeout(() => setShareCopied(false), 2500);
                 }}
                 className={cn(
-                  "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all shrink-0",
+                  "flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all shrink-0",
                   shareCopied 
                     ? "bg-emerald-600 text-white" 
-                    : "bg-pink-600 text-white hover:bg-pink-500 active:scale-95"
+                    : "bg-gradient-to-r from-pink-500 to-purple-600 text-white hover:opacity-90 active:scale-95"
                 )}
               >
                 {shareCopied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
@@ -412,17 +508,17 @@ export function VideoPlayer({ video, isActive, onPlay, onOpenModal, isModal = fa
           {/* Social Quick Share Buttons */}
           <div className="space-y-1.5 pt-1">
             <label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
-              Compartir directamente
+              Compartir en redes
             </label>
             <div className="grid grid-cols-3 gap-2">
               <button 
                 type="button"
                 onClick={() => {
                   const url = typeof window !== 'undefined' ? window.location.href : '';
-                  const text = `Mira este video de Gisela: ${url}`;
+                  const text = `Mira este video oficial de Gisela Privé: ${url}`;
                   window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
                 }}
-                className="flex items-center justify-center gap-1.5 rounded-xl border border-emerald-900/50 bg-emerald-950/40 p-2.5 text-xs font-semibold text-emerald-400 hover:bg-emerald-900/50 transition-colors"
+                className="flex items-center justify-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-950/40 p-2.5 text-xs font-bold text-emerald-400 hover:bg-emerald-900/50 transition-colors shadow-sm"
               >
                 <span>WhatsApp</span>
               </button>
@@ -433,7 +529,7 @@ export function VideoPlayer({ video, isActive, onPlay, onOpenModal, isModal = fa
                   const url = typeof window !== 'undefined' ? window.location.href : '';
                   window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent('Gisela Privé Oficial')}`, '_blank', 'noopener,noreferrer');
                 }}
-                className="flex items-center justify-center gap-1.5 rounded-xl border border-sky-900/50 bg-sky-950/40 p-2.5 text-xs font-semibold text-sky-400 hover:bg-sky-900/50 transition-colors"
+                className="flex items-center justify-center gap-1.5 rounded-xl border border-sky-500/30 bg-sky-950/40 p-2.5 text-xs font-bold text-sky-400 hover:bg-sky-900/50 transition-colors shadow-sm"
               >
                 <span>Telegram</span>
               </button>
@@ -444,7 +540,7 @@ export function VideoPlayer({ video, isActive, onPlay, onOpenModal, isModal = fa
                   const url = typeof window !== 'undefined' ? window.location.href : '';
                   window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent('Gisela Privé ✨')}`, '_blank', 'noopener,noreferrer');
                 }}
-                className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900/80 p-2.5 text-xs font-semibold text-zinc-200 hover:bg-zinc-800 transition-colors"
+                className="flex items-center justify-center gap-1.5 rounded-xl border border-purple-500/30 bg-purple-950/40 p-2.5 text-xs font-bold text-purple-300 hover:bg-purple-900/50 transition-colors shadow-sm"
               >
                 <span>X / Twitter</span>
               </button>
@@ -455,3 +551,4 @@ export function VideoPlayer({ video, isActive, onPlay, onOpenModal, isModal = fa
     </div>
   );
 }
+

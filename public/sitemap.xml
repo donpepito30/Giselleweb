@@ -1,9 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
   <url>
-    <loc>https://gisela.app/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <loc>https://giselleweb.pages.dev/</loc>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    <video:video>
+      <video:thumbnail_loc>https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600</video:thumbnail_loc>
+      <video:title>Gisela - Reel Exclusivo</video:title>
+      <video:description>Vibras de fin de semana y momentos únicos. Capturando instantes espontáneos.</video:description>
+      <video:content_loc>https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/reel.mp4</video:content_loc>
+      <video:publication_date>2026-09-10</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600</video:thumbnail_loc>
+      <video:title>Gisela - Diciéndole que sí</video:title>
+      <video:description>Diciéndole que sí a los nuevos comienzos y a todo lo bueno que viene.</video:description>
+      <video:content_loc>https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/si.mp4</video:content_loc>
+      <video:publication_date>2026-09-10</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600</video:thumbnail_loc>
+      <video:title>Gisela - Look Fresco</video:title>
+      <video:description>Un look fresco para disfrutar del día al máximo con total autenticidad.</video:description>
+      <video:content_loc>https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_1774600024749.mp4</video:content_loc>
+      <video:publication_date>2026-09-10</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://images.unsplash.com/photo-1517841905240-472988babdf9?w=600</video:thumbnail_loc>
+      <video:title>Gisela - Calma y Serenidad</video:title>
+      <video:description>Disfrutando de la tarde con una calma increíble.</video:description>
+      <video:content_loc>https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_1775107538796.mp4</video:content_loc>
+      <video:publication_date>2026-09-10</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600</video:thumbnail_loc>
+      <video:title>Gisela - Detalles y Combinaciones</video:title>
+      <video:description>Detalles que enamoran y combinaciones favoritas de moda y estilo.</video:description>
+      <video:content_loc>https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40andreabatres565_1775109224067.mp4</video:content_loc>
+      <video:publication_date>2026-09-10</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600</video:thumbnail_loc>
+      <video:title>Gisela - Outfits y Moda</video:title>
+      <video:description>Terminando de arreglarme antes de salir con un look equilibrado.</video:description>
+      <video:content_loc>https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40gisela08.07_1775107343109.mp4</video:content_loc>
+      <video:publication_date>2026-09-10</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://images.unsplash.com/photo-1517841905240-472988babdf9?w=600</video:thumbnail_loc>
+      <video:title>Gisela - Vestido y Presencia</video:title>
+      <video:description>Corte elegante y actitud empoderada en vestido de noche.</video:description>
+      <video:content_loc>https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40gisela08.07_1775107430870.mp4</video:content_loc>
+      <video:publication_date>2026-09-10</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600</video:thumbnail_loc>
+      <video:title>Gisela - Energía Positiva</video:title>
+      <video:description>Enfocada en lo que me hace feliz y me llena de energía positiva.</video:description>
+      <video:content_loc>https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40gisela08.07_1775107475115.mp4</video:content_loc>
+      <video:publication_date>2026-09-10</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>
   </url>
 </urlset>

@@ -1,0 +1,36 @@
+# Cloudflare Pages Headers Configuration - Enterprise Grade Security & High Performance
+
+/*
+  # Content Security Policy (CSP)
+  Content-Security-Policy: default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://images.unsplash.com https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev; media-src 'self' blob: https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev; connect-src 'self' https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;
+
+  # HTTP Strict Transport Security (HSTS)
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+
+  # Clickjacking & Sniffing Protection
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+
+  # Cross-Origin Policies
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: cross-origin
+
+  # Restricted Browser Features & Hardware Permissions
+  Permissions-Policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=(), interest-cohort=()
+
+# Cache static hashed assets aggressively for high speed performance
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+  X-Content-Type-Options: nosniff
+
+# Cache SEO and metadata files with quick revalidation
+/robots.txt
+  Cache-Control: public, max-age=86400, stale-while-revalidate=43200
+  Content-Type: text/plain; charset=utf-8
+
+/sitemap.xml
+  Cache-Control: public, max-age=86400, stale-while-revalidate=43200
+  Content-Type: application/xml; charset=utf-8
+

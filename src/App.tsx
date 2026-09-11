@@ -6,22 +6,39 @@
 import { Header } from './components/Header';
 import { HeroProfile } from './components/HeroProfile';
 import { VideoFeed } from './components/VideoFeed';
+import { PlaybackProvider } from './context/PlaybackContext';
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-zinc-950 font-sans selection:bg-pink-500/30">
-      <Header />
-      
-      <main className="pt-16">
-        <HeroProfile />
-        <VideoFeed />
-      </main>
+    <PlaybackProvider>
+      <div className="relative min-h-screen bg-zinc-950 font-sans text-zinc-100 selection:bg-pink-500/40 selection:text-white overflow-x-hidden">
+        <div className="relative z-10 flex flex-col min-h-screen">
+          <Header />
+          
+          <main className="flex-1 pt-16">
+            <HeroProfile />
+            <VideoFeed />
+          </main>
 
-      <footer className="mt-12 border-t border-zinc-900 bg-zinc-950 py-12 text-center text-sm text-zinc-500">
-        <p>© {new Date().getFullYear()} Gisela. All rights reserved.</p>
-        <p className="mt-2 text-xs">Desarrollado para rendimiento y experiencia premium.</p>
-      </footer>
-    </div>
+          <footer className="relative z-10 mt-16 border-t border-zinc-900 bg-zinc-950 py-12 px-4 text-center">
+            <div className="mx-auto max-w-4xl flex flex-col items-center gap-3">
+              <span className="font-brand text-lg font-extrabold uppercase tracking-widest text-white">
+                Gisela Privé
+              </span>
+
+              <p className="text-xs text-zinc-400 max-w-md leading-relaxed">
+                Plataforma audiovisual oficial y galería de Gisela.
+              </p>
+
+              <p className="text-[11px] text-zinc-500 pt-2">
+                © {new Date().getFullYear()} Gisela. Todos los derechos reservados.
+              </p>
+            </div>
+          </footer>
+        </div>
+      </div>
+    </PlaybackProvider>
   );
 }
+
 
