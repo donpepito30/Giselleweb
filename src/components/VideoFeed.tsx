@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Film } from 'lucide-react';
 import { VIDEOS } from '../data';
 import { VideoPlayer } from './VideoPlayer';
 import { usePlayback } from '../context/PlaybackContext';
@@ -33,16 +34,15 @@ export function VideoFeed() {
   }, [allFeedVideos, playVideo]);
 
   return (
-    <section id="feed" className="relative w-full px-0 sm:px-4 md:px-6 py-8 sm:py-14">
-      {/* Feed Header */}
-      <div className="mb-8 sm:mb-12 flex flex-col items-center text-center gap-3 px-4 max-w-3xl mx-auto">
-        <h2 className="font-brand text-3xl sm:text-5xl font-black text-white tracking-tight uppercase">
-          Archivo de Video
-        </h2>
-
-        <p className="text-zinc-400 text-xs sm:text-sm max-w-lg leading-relaxed">
-          Desliza para explorar cada pieza en formato vertical cinematográfico. Toca sobre el video para pausar o reproducir.
-        </p>
+    <section id="feed" className="relative w-full px-0 sm:px-4 md:px-6 pt-2 pb-12 sm:pb-16">
+      {/* Minimalist Profile Tab Indicator (Instagram/TikTok style) */}
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 mb-6 sm:mb-10">
+        <div className="flex items-center justify-center border-t border-zinc-900">
+          <div className="flex items-center gap-2 border-t-2 border-white -mt-[1.5px] pt-3 px-6 text-white text-xs uppercase tracking-widest font-bold">
+            <Film className="h-3.5 w-3.5" />
+            <span>Reels</span>
+          </div>
+        </div>
       </div>
       
       {/* Feed List: One video at a time, adapted automatically to screen width */}

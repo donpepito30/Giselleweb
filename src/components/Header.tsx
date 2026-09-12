@@ -85,7 +85,7 @@ export function Header() {
                 </div>
                 <span>Videos</span>
               </div>
-              <span className="text-xs font-bold text-pink-400 uppercase tracking-wider">Explorar</span>
+              <span className="text-xs font-bold text-pink-400 uppercase tracking-wider">Ver</span>
             </a>
 
             <a 

@@ -1,9 +1,16 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll } from 'vitest';
 import fs from 'fs';
 import path from 'path';
+import { execSync } from 'child_process';
 
 describe('Production Build Output Verification', () => {
   const distDir = path.resolve(process.cwd(), 'dist');
+
+  beforeAll(() => {
+    if (!fs.existsSync(distDir) || !fs.existsSync(path.join(distDir, 'index.html'))) {
+      execSync('npm run build', { stdio: 'pipe' });
+    }
+  });
 
   it('dist directory and index.html exist', () => {
     expect(fs.existsSync(distDir)).toBe(true);

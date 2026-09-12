@@ -3,12 +3,23 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { useEffect } from 'react';
 import { Header } from './components/Header';
 import { HeroProfile } from './components/HeroProfile';
+import { VideoCarousel } from './components/VideoCarousel';
 import { VideoFeed } from './components/VideoFeed';
 import { PlaybackProvider } from './context/PlaybackContext';
+import { startPerformanceSupervisor } from './lib/performanceSupervisor';
 
 export default function App() {
+  // Autonomous scheduled background optimization loop
+  useEffect(() => {
+    const stopSupervisor = startPerformanceSupervisor({ intervalMs: 20000 });
+    return () => {
+      stopSupervisor();
+    };
+  }, []);
+
   return (
     <PlaybackProvider>
       <div className="relative min-h-screen bg-zinc-950 font-sans text-zinc-100 selection:bg-pink-500/40 selection:text-white overflow-x-hidden">
@@ -17,6 +28,7 @@ export default function App() {
           
           <main className="flex-1 pt-16">
             <HeroProfile />
+            <VideoCarousel />
             <VideoFeed />
           </main>
 

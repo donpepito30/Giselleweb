@@ -337,5 +337,179 @@ export const VIDEOS: Video[] = [
       { id: 'c54', user: 'marcos_g', avatar: av2, text: 'Se nota el amor y el detalle que le pones a todo!', time: '40m' },
       { id: 'c55', user: 'diana_wander', avatar: av1, text: 'Siempre innovando y viéndote maravillosa, cuenta con nosotros ✨', time: '2h' },
     ]
+  },
+  {
+    id: 'vid_26',
+    url: 'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40gisela08.07_1775107877523.mp4',
+    baseLikes: 9340,
+    baseComments: 142,
+    baseShares: 61,
+    description: 'Cuando te sientes cómoda contigo misma, todo fluye de manera natural ✨ Me encanta este outfit ligero y la paz que transmite este rincón. Gracias por acompañarme siempre 🤍',
+    commentsList: [
+      { id: 'c56', user: 'valeria.m', avatar: av3, text: 'Qué elegancia y soltura, siempre transmitiendo paz ✨', time: '10m' },
+      { id: 'c57', user: 'marcos_g', avatar: av2, text: 'Hermosa toma, el estilismo te queda de diez!', time: '35m' },
+      { id: 'c58', user: 'claudia.fit', avatar: av5, text: 'Amo este video, tu autenticidad no tiene comparación 💕', time: '2h' },
+    ]
+  },
+  {
+    id: 'vid_27',
+    url: 'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40la.guerita0137_1775105428598.mp4',
+    baseLikes: 8210,
+    baseComments: 118,
+    baseShares: 47,
+    description: 'Disfrutando al compás de la música y compartiendo buenos momentos 🎶 La actitud positiva es el mejor accesorio que podemos llevar puesto cada día.',
+    commentsList: [
+      { id: 'c59', user: 'sofia_couture', avatar: av1, text: 'Ese carisma es único, qué alegría contagias! 💖', time: '15m' },
+      { id: 'c60', user: 'daniel.r', avatar: av4, text: 'Un video lleno de vida y buena vibra ✨', time: '50m' },
+      { id: 'c61', user: 'lucia_b', avatar: av3, text: 'Me encanta tu estilo, siempre tan espontánea 😍', time: '3h' },
+    ]
+  },
+  {
+    id: 'vid_28',
+    url: 'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40la.guerita0137_1775105461051.mp4',
+    baseLikes: 6940,
+    baseComments: 89,
+    baseShares: 34,
+    description: 'Un instante de diversión y desconexión total 💫 A veces solo hace falta sonreír y dejarse llevar por el momento presente.',
+    commentsList: [
+      { id: 'c62', user: 'mateo_s', avatar: av2, text: 'Qué linda sonrisa, tienes una chispa genial 😊', time: '20m' },
+      { id: 'c63', user: 'caro_moda', avatar: av5, text: 'Precioso outfit y qué buena energía transmites ✨', time: '1h' },
+    ]
+  },
+  {
+    id: 'vid_29',
+    url: 'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40la.guerita0137_1775105487408.mp4',
+    baseLikes: 7530,
+    baseComments: 104,
+    baseShares: 42,
+    description: 'Momentos espontáneos que quedan grabados en el corazón 🌸 Viviendo cada día con gratitud y celebrando lo simple.',
+    commentsList: [
+      { id: 'c64', user: 'camila.v', avatar: av1, text: 'Súper dulce y natural como siempre 🤍', time: '12m' },
+      { id: 'c65', user: 'adrian_92', avatar: av4, text: 'Gran clip, la frescura que tienes es incomparable!', time: '45m' },
+    ]
+  },
+  {
+    id: 'vid_30',
+    url: 'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40la.guerita0137_1775105563179.mp4',
+    baseLikes: 8870,
+    baseComments: 131,
+    baseShares: 56,
+    description: 'Explorando nuevas combinaciones y disfrutando de cada detalle ✨ La moda es una forma de expresión y juego constante.',
+    commentsList: [
+      { id: 'c66', user: 'valentina_m', avatar: av3, text: 'Ese look te queda fenomenal, pura inspiración 👌', time: '18m' },
+      { id: 'c67', user: 'rodrigo_b', avatar: av2, text: 'Qué estilazo y presencia frente a la cámara!', time: '1h' },
+      { id: 'c68', user: 'paula.estilo', avatar: av5, text: 'De mis videos favoritos de la semana, divina 🔥', time: '2h' },
+    ]
+  },
+  {
+    id: 'vid_31',
+    url: 'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40la.guerita0137_1775105619679.mp4',
+    baseLikes: 6420,
+    baseComments: 79,
+    baseShares: 28,
+    description: 'Buena vibra, ritmo y una sonrisa para alegrar la jornada 💖 Gracias a todos los que dejan su cariño en cada publicación.',
+    commentsList: [
+      { id: 'c69', user: 'elena_sky', avatar: av1, text: 'Siempre iluminando el feed con tu energía positiva ✨', time: '25m' },
+      { id: 'c70', user: 'felipe_lens', avatar: av4, text: 'Excelente soltura y movimiento, una maravilla.', time: '1h' },
+    ]
+  },
+  {
+    id: 'vid_32',
+    url: 'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40la.guerita0137_1775105738133.mp4',
+    baseLikes: 9650,
+    baseComments: 147,
+    baseShares: 65,
+    description: 'Días soleados que invitan a crear y sonreír ☀️ Me encanta compartir estos instantes cotidianos con ustedes.',
+    commentsList: [
+      { id: 'c71', user: 'andrea_sol', avatar: av5, text: 'La luz natural te favorece muchísimo ☀️', time: '8m' },
+      { id: 'c72', user: 'carlos.m', avatar: av2, text: 'Pura belleza y frescura en este clip ✨', time: '40m' },
+      { id: 'c73', user: 'mariana.p', avatar: av3, text: 'Qué hermosa actitud, me encantó este reel!', time: '2h' },
+    ]
+  },
+  {
+    id: 'vid_33',
+    url: 'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40la.guerita0137_1775105766524.mp4',
+    baseLikes: 7120,
+    baseComments: 95,
+    baseShares: 39,
+    description: 'La belleza de ser uno mismo sin pretensiones ✨ Conectando con lo que de verdad importa y disfrutando el proceso.',
+    commentsList: [
+      { id: 'c74', user: 'monica_chic', avatar: av1, text: 'Tan cercana y auténtica, un placer verte por aquí 💫', time: '14m' },
+      { id: 'c75', user: 'sergio_lens', avatar: av4, text: 'Gran ángulo y enfoque, te ves genial.', time: '55m' },
+    ]
+  },
+  {
+    id: 'vid_34',
+    url: 'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40la.guerita0137_1775105820814.mp4',
+    baseLikes: 8340,
+    baseComments: 116,
+    baseShares: 50,
+    description: 'Cambiando de ritmo y disfrutando del momento presente 💫 A veces un pequeño cambio de look renueva toda tu energía.',
+    commentsList: [
+      { id: 'c76', user: 'diana_wander', avatar: av3, text: 'Qué bien te sienta ese estilo, súper moderno!', time: '22m' },
+      { id: 'c77', user: 'martin_c', avatar: av2, text: 'Una vibra espectacular, sigue compartiendo así 🙌', time: '1h' },
+    ]
+  },
+  {
+    id: 'vid_35',
+    url: 'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40la.guerita0137_1775105879364.mp4',
+    baseLikes: 5980,
+    baseComments: 74,
+    baseShares: 25,
+    description: 'Detalles cotidianos y miradas que lo dicen todo ✨ Un recuerdo especial que quise guardar en este espacio.',
+    commentsList: [
+      { id: 'c78', user: 'natalia_p', avatar: av5, text: 'Qué linda toma, tan espontánea y bonita 💕', time: '30m' },
+      { id: 'c79', user: 'bruno_m', avatar: av4, text: 'La naturalidad siempre gana, un saludo fuerte!', time: '1h' },
+    ]
+  },
+  {
+    id: 'vid_36',
+    url: 'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40la.guerita0137_1775105907247.mp4',
+    baseLikes: 7890,
+    baseComments: 111,
+    baseShares: 43,
+    description: 'Viviendo con entusiasmo y buena música 🎶 Rodéate de lo que te sume y te haga reír sin medida.',
+    commentsList: [
+      { id: 'c80', user: 'daniela_style', avatar: av1, text: 'Qué energía más contagiosa, me encantó este clip 🔥', time: '10m' },
+      { id: 'c81', user: 'victor_k', avatar: av2, text: 'Siempre con una sonrisa, pura simpatía!', time: '45m' },
+    ]
+  },
+  {
+    id: 'vid_37',
+    url: 'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40la.guerita0137_1775105956926.mp4',
+    baseLikes: 9120,
+    baseComments: 139,
+    baseShares: 58,
+    description: 'Momentos únicos que inspiran y llenan de gratitud 💖 Me hace muy feliz leer sus comentarios y ver cómo nos apoyamos entre todos.',
+    commentsList: [
+      { id: 'c82', user: 'angela_r', avatar: av3, text: 'Gracias por compartir tu día a día con nosotros, eres un sol ❤️', time: '15m' },
+      { id: 'c83', user: 'kevin_mia', avatar: av4, text: 'Excelente video, qué soltura frente a la cámara!', time: '35m' },
+      { id: 'c84', user: 'sofia_couture', avatar: av5, text: 'Hermosa de pies a cabeza, qué porte ✨', time: '2h' },
+    ]
+  },
+  {
+    id: 'vid_38',
+    url: 'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40la.guerita0137_1775106029976.mp4',
+    baseLikes: 8460,
+    baseComments: 122,
+    baseShares: 51,
+    description: 'La magia de los pequeños instantes compartidos ✨ Siempre agradecida con cada uno de ustedes por estar al otro lado.',
+    commentsList: [
+      { id: 'c85', user: 'gabriel_ph', avatar: av2, text: 'Qué calidad y armonía en este video 🌇✨', time: '12m' },
+      { id: 'c86', user: 'marina_sun', avatar: av1, text: 'Tu contenido siempre aporta paz y alegría.', time: '50m' },
+    ]
+  },
+  {
+    id: 'vid_39',
+    url: 'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40la.guerita0137_1775106072457.mp4',
+    baseLikes: 10450,
+    baseComments: 168,
+    baseShares: 72,
+    description: 'Cerrando el día con la mejor energía y el corazón contento 💫 Cada paso cuenta cuando caminas hacia lo que sueñas.',
+    commentsList: [
+      { id: 'c87', user: 'clara_b', avatar: av3, text: 'Un cierre perfecto de video, te ves fantástica ✨', time: '7m' },
+      { id: 'c88', user: 'jorge_d', avatar: av4, text: 'Qué gran vibra transmites, un 10 total!', time: '28m' },
+      { id: 'c89', user: 'isabel_fit', avatar: av5, text: 'Pura inspiración y belleza, un abrazo grande 💕', time: '1h' },
+    ]
   }
 ];

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Heart, MessageCircle, Play, Share2, Volume2, VolumeX, X, Send, Check, Copy, Music2, CheckCircle2 } from 'lucide-react';
-import { cn, sanitizeInput, safeCopyText, formatNumber } from '../lib/utils';
+import { Heart, MessageCircle, Play, Share2, Volume2, VolumeX, X, Send, Check, Copy, Music2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { cn, sanitizeInput, validateCommentInput, isRateLimited, safeCopyText, formatNumber } from '../lib/utils';
 import type { Video, Comment } from '../types';
 import { USER_PROFILE } from '../data';
 
@@ -24,6 +24,7 @@ export function VideoPlayer({ video, isActive, onPlay, onPause, isModal = false 
   const [isNearViewport, setIsNearViewport] = useState(false);
   const [showHeartBurst, setShowHeartBurst] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [commentError, setCommentError] = useState<string | null>(null);
   
   // Real-time comment list state
   const [comments, setComments] = useState<Comment[]>(video.commentsList);
@@ -35,14 +36,14 @@ export function VideoPlayer({ video, isActive, onPlay, onPause, isModal = false 
   const [commentsCount, setCommentsCount] = useState(video.baseComments);
   const [hasLiked, setHasLiked] = useState(false);
 
-  // Performance: Lazy-observe player proximity to avoid decoding 25 videos at once
+  // Performance: Lazy-observe player proximity to avoid decoding 39 videos at once
   useEffect(() => {
     if (!containerRef.current) return;
     const observer = new IntersectionObserver(
       ([entry]) => {
         setIsNearViewport(entry.isIntersecting);
       },
-      { rootMargin: '400px 0px' }
+      { rootMargin: '300px 0px' }
     );
     observer.observe(containerRef.current);
     return () => observer.disconnect();
@@ -64,6 +65,14 @@ export function VideoPlayer({ video, isActive, onPlay, onPause, isModal = false 
       setIsPlaying(true);
     }
   }, [isModal]);
+
+  // Clean-up playback if scrolled far away from viewport to save hardware resources
+  useEffect(() => {
+    if (!isNearViewport && isPlaying && videoRef.current) {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    }
+  }, [isNearViewport, isPlaying]);
 
   useEffect(() => {
     if (!isActive && isPlaying && videoRef.current && !isModal) {
@@ -107,8 +116,23 @@ export function VideoPlayer({ video, isActive, onPlay, onPause, isModal = false 
 
   const handleAddComment = (e: React.FormEvent) => {
     e.preventDefault();
-    const cleanText = sanitizeInput(newComment);
-    if (!cleanText) return;
+    setCommentError(null);
+
+    // Rate-limiting check: max 1 comment per 3 seconds per video
+    if (isRateLimited(`comment_${video.id}`, 3000)) {
+      setCommentError('Por favor espera unos segundos antes de enviar otro comentario.');
+      setTimeout(() => setCommentError(null), 4000);
+      return;
+    }
+
+    const { valid, error, cleanText } = validateCommentInput(newComment);
+    if (!valid || !cleanText) {
+      if (error) {
+        setCommentError(error);
+        setTimeout(() => setCommentError(null), 4000);
+      }
+      return;
+    }
 
     const added: Comment = {
       id: `new_${Date.now()}`,
@@ -166,13 +190,15 @@ export function VideoPlayer({ video, isActive, onPlay, onPause, isModal = false 
         {isNearViewport ? (
           <video
             ref={videoRef}
-            src={`${video.url}#t=0.001`}
+            src={`${video.url}#t=0.5`}
             loop
             playsInline
             muted={isMuted}
-            preload="auto"
-            controlsList="nodownload"
+            preload={isActive ? "auto" : "metadata"}
+            controlsList="nodownload nofullscreen noremoteplayback"
             disablePictureInPicture
+            title={`Gisela Privé - ${video.description.slice(0, 60)}`}
+            aria-label={`Video de Gisela: ${video.description.slice(0, 60)}`}
             onContextMenu={(e) => e.preventDefault()}
             className="relative z-1 w-full h-full object-cover pointer-events-none"
             style={{ filter: 'none', backdropFilter: 'none' }}
@@ -379,6 +405,12 @@ export function VideoPlayer({ video, isActive, onPlay, onPause, isModal = false 
 
         {/* New Comment Input with Sanitization & Gradient Button */}
         <form onSubmit={handleAddComment} className="p-3.5 border-t border-white/10 bg-zinc-950 shrink-0">
+          {commentError && (
+            <div className="mb-2 flex items-center gap-1.5 rounded-lg bg-rose-950/60 border border-rose-500/40 px-3 py-1.5 text-[11px] text-rose-200">
+              <AlertCircle className="h-3.5 w-3.5 text-rose-400 shrink-0" />
+              <span>{commentError}</span>
+            </div>
+          )}
           <div className="flex items-center gap-2">
             <input 
               type="text" 

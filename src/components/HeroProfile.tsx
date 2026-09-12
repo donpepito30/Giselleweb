@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { CheckCircle2, Link2, MapPin, CalendarDays, Sparkles, Heart, Users, Compass, MessageCircle, X, Send, Volume2, VolumeX } from 'lucide-react';
+import { CheckCircle2, Link2, MapPin, CalendarDays, Sparkles, Heart, Users, Compass, MessageCircle, X, Send, Volume2, VolumeX, AlertCircle } from 'lucide-react';
 import { USER_PROFILE, VIDEOS } from '../data';
 import { usePlayback } from '../context/PlaybackContext';
-import { cn } from '../lib/utils';
+import { cn, sanitizeInput, isRateLimited } from '../lib/utils';
 
 export function HeroProfile() {
   const bannerVideo = VIDEOS.find(v => v.url.includes('1775107671455')) || VIDEOS[0];
@@ -13,6 +13,7 @@ export function HeroProfile() {
 
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [messageSent, setMessageSent] = useState(false);
+  const [messageError, setMessageError] = useState<string | null>(null);
   const [messageText, setMessageText] = useState('');
   const [isHeroMuted, setIsHeroMuted] = useState(true);
 
@@ -93,7 +94,21 @@ export function HeroProfile() {
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!messageText.trim()) return;
+    setMessageError(null);
+
+    if (isRateLimited('dm_message', 4000)) {
+      setMessageError('Espera unos segundos antes de enviar otro mensaje.');
+      setTimeout(() => setMessageError(null), 4000);
+      return;
+    }
+
+    const clean = sanitizeInput(messageText);
+    if (!clean || clean.length < 2) {
+      setMessageError('El mensaje debe tener al menos 2 caracteres.');
+      setTimeout(() => setMessageError(null), 4000);
+      return;
+    }
+
     setMessageSent(true);
     setTimeout(() => {
       setMessageSent(false);
@@ -305,6 +320,12 @@ export function HeroProfile() {
               </div>
             ) : (
               <form onSubmit={handleSendMessage} className="pt-4 space-y-4">
+                {messageError && (
+                  <div className="flex items-center gap-1.5 rounded-lg bg-rose-950/60 border border-rose-500/40 px-3 py-2 text-xs text-rose-200">
+                    <AlertCircle className="h-4 w-4 text-rose-400 shrink-0" />
+                    <span>{messageError}</span>
+                  </div>
+                )}
                 <div>
                   <label className="block text-xs font-semibold text-zinc-300 mb-1.5">Tu Mensaje</label>
                   <textarea

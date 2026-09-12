@@ -58,4 +58,35 @@ describe('Production Data Integrity & Schema Validation', () => {
     expect(heroTarget).toBeDefined();
     expect(heroTarget?.url).toBe(USER_PROFILE.avatarUrl);
   });
+
+  it('all user-requested video URLs must exist in VIDEOS catalog', () => {
+    const requestedUrls = [
+      'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40gisela08.07_1775107475115.mp4',
+      'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40gisela08.07_1775107621819.mp4',
+      'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40gisela08.07_1775107671455.mp4',
+      'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40gisela08.07_1775107707998.mp4',
+      'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40gisela08.07_1775107830497.mp4',
+      'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40gisela08.07_1775107877523.mp4',
+      'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40gisela08.07_1775108096203.mp4',
+      'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40gisela08.07_1775108236164.mp4',
+      'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40la.guerita0137_1775105428598.mp4',
+      'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40la.guerita0137_1775105461051.mp4',
+      'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40la.guerita0137_1775105487408.mp4',
+      'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40la.guerita0137_1775105563179.mp4',
+      'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40la.guerita0137_1775105619679.mp4',
+      'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40la.guerita0137_1775105738133.mp4',
+      'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40la.guerita0137_1775105766524.mp4',
+      'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40la.guerita0137_1775105820814.mp4',
+      'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40la.guerita0137_1775105879364.mp4',
+      'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40la.guerita0137_1775105907247.mp4',
+      'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40la.guerita0137_1775105956926.mp4',
+      'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40la.guerita0137_1775106029976.mp4',
+      'https://pub-48a3d2a525fb49acb6af0cbe634de724.r2.dev/ssstik.io_%40la.guerita0137_1775106072457.mp4'
+    ];
+
+    requestedUrls.forEach(url => {
+      const match = VIDEOS.find(v => v.url === url);
+      expect(match).toBeDefined();
+    });
+  });
 });

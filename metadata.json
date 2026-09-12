@@ -1,6 +1,6 @@
 {
-  "name": "GISELA PRIVÉ",
-  "description": "Plataforma oficial y archivo audiovisual de Gisela.",
+  "name": "GISELA PRIVÉ | Official Video Archive & Short-Form Reels",
+  "description": "Plataforma audiovisual oficial de Gisela (@gisela08.07). Exclusive short-form videos, TikTok trends, and fashion reels. 지셀라 공식 숏폼 및 릴스 아카이브.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
