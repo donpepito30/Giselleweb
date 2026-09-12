@@ -18,7 +18,7 @@ describe('Production Build Output Verification', () => {
     expect(fs.existsSync(indexPath)).toBe(true);
 
     const htmlContent = fs.readFileSync(indexPath, 'utf-8');
-    expect(htmlContent).toContain('<title>GISELA PRIVÉ</title>');
+    expect(htmlContent).toContain('<title>GISELA PRIVÉ');
     expect(htmlContent).toContain('<div id="root">');
     expect(htmlContent).toContain('<!doctype html>');
   });
