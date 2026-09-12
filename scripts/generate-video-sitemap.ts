@@ -30,7 +30,12 @@ export function generateSitemapXml(): string {
     const shortDesc = video.description.replace(/[\n\r]+/g, ' ').slice(0, 160);
     const videoTitle = `Gisela - Reel #${index + 1} | Viral Short-Form Video (지셀라 숏폼)`;
 
-    return `    <video:video>
+    return `  <url>
+    <loc>${domain}/#${video.id}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <video:video>
       <video:thumbnail_loc>${escapeXml(thumb)}</video:thumbnail_loc>
       <video:title>${escapeXml(videoTitle)}</video:title>
       <video:description>${escapeXml(shortDesc)}</video:description>
@@ -47,7 +52,8 @@ export function generateSitemapXml(): string {
       <video:tag>Viral Reels</video:tag>
       <video:tag>Fashion</video:tag>
       <video:tag>Dance Challenge</video:tag>
-    </video:video>`;
+    </video:video>
+  </url>`;
   }).join('\n');
 
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -63,8 +69,8 @@ export function generateSitemapXml(): string {
     <xhtml:link rel="alternate" hreflang="en-US" href="${domain}/" />
     <xhtml:link rel="alternate" hreflang="ko-KR" href="${domain}/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="${domain}/" />
-${videoEntries}
   </url>
+${videoEntries}
 </urlset>
 `;
 }
