@@ -35,7 +35,7 @@ export function generateSitemapXml(): string {
     const thumb = fallbackThumbnails[index % fallbackThumbnails.length];
     // Create descriptive bilingual title and sanitized description (strip emojis)
     const rawDesc = video.description.replace(/[\n\r]+/g, ' ');
-    const shortDesc = stripEmojis(rawDesc).slice(0, 160);
+    const shortDesc = stripEmojis(rawDesc); // Use full description to prevent truncated mid-word sentences
     const videoTitle = `Gisela - Reel #${index + 1} | Viral Short-Form Video (지셀라 숏폼)`;
 
     return `  <url>
@@ -48,6 +48,7 @@ export function generateSitemapXml(): string {
       <video:title>${escapeXml(videoTitle)}</video:title>
       <video:description>${escapeXml(shortDesc)}</video:description>
       <video:content_loc>${escapeXml(video.url)}</video:content_loc>
+      <video:player_loc allow_embed="yes" autoplay="yes">${escapeXml(`${domain}/#${video.id}`)}</video:player_loc>
       <video:publication_date>${lastmod}</video:publication_date>
       <video:family_friendly>yes</video:family_friendly>
       <video:uploader info="${domain}/">Gisela</video:uploader>
