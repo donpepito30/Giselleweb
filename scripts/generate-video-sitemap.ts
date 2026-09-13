@@ -33,17 +33,12 @@ export function generateSitemapXml(): string {
 
   const videoEntries = VIDEOS.map((video, index) => {
     const thumb = fallbackThumbnails[index % fallbackThumbnails.length];
-    // Create descriptive bilingual title and sanitized description (strip emojis)
-    const rawDesc = video.description.replace(/[\n\r]+/g, ' ');
-    const shortDesc = stripEmojis(rawDesc); // Use full description to prevent truncated mid-word sentences
+    // Create descriptive bilingual title and sanitized description (strip emojis to prevent editor backend sync crash)
+    const rawDesc = video.description.replace(/[\n\r]+/g, ' ').trim();
+    const shortDesc = stripEmojis(rawDesc);
     const videoTitle = `Gisela - Reel #${index + 1} | Viral Short-Form Video (지셀라 숏폼)`;
 
-    return `  <url>
-    <loc>${domain}/#${video.id}</loc>
-    <lastmod>${lastmod}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-    <video:video>
+    return `    <video:video>
       <video:thumbnail_loc>${escapeXml(thumb)}</video:thumbnail_loc>
       <video:title>${escapeXml(videoTitle)}</video:title>
       <video:description>${escapeXml(shortDesc)}</video:description>
@@ -51,7 +46,7 @@ export function generateSitemapXml(): string {
       <video:player_loc allow_embed="yes" autoplay="yes">${escapeXml(`${domain}/#${video.id}`)}</video:player_loc>
       <video:publication_date>${lastmod}</video:publication_date>
       <video:family_friendly>yes</video:family_friendly>
-      <video:uploader info="${domain}/">Gisela</video:uploader>
+      <video:uploader info="${domain}/">Gisela (@gisela08.07)</video:uploader>
       <video:tag>Gisela</video:tag>
       <video:tag>지셀라</video:tag>
       <video:tag>숏폼</video:tag>
@@ -60,8 +55,7 @@ export function generateSitemapXml(): string {
       <video:tag>Viral Reels</video:tag>
       <video:tag>Fashion</video:tag>
       <video:tag>Dance Challenge</video:tag>
-    </video:video>
-  </url>`;
+    </video:video>`;
   }).join('\n');
 
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -77,8 +71,8 @@ export function generateSitemapXml(): string {
     <xhtml:link rel="alternate" hreflang="en-US" href="${domain}/" />
     <xhtml:link rel="alternate" hreflang="ko-KR" href="${domain}/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="${domain}/" />
-  </url>
 ${videoEntries}
+  </url>
 </urlset>
 `;
 }

@@ -82,7 +82,13 @@ describe('Google Search Console & International SEO Integrity', () => {
     expect(parsed).toHaveProperty('@graph');
     expect(Array.isArray(parsed['@graph'])).toBe(true);
 
-    const types = parsed['@graph'].map((item: { ['@type']: string }) => item['@type']);
+    const types = parsed['@graph'].flatMap((item: any) => {
+      const res = [item['@type']];
+      if (item.mainEntity && item.mainEntity['@type']) {
+        res.push(item.mainEntity['@type']);
+      }
+      return res;
+    });
     expect(types).toContain('WebSite');
     expect(types).toContain('ProfilePage');
     expect(types).toContain('Person');
