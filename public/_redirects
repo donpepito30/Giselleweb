@@ -1,3 +1,7 @@
-# Cloudflare Pages SPA Routing rule
-# Ensures all route requests fallback to index.html with 200 OK
-/*    /index.html   200
+# Explicit bypasses for search engines and crawlers
+/sitemap.xml                      /sitemap.xml                      200
+/robots.txt                       /robots.txt                       200
+/google001807102b37c1ac.html      /google001807102b37c1ac.html      200
+
+# Cloudflare Pages SPA Routing fallback
+/*                                /index.html                       200
