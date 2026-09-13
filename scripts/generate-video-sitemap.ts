@@ -11,6 +11,13 @@ function escapeXml(unsafe: string): string {
     .replace(/'/g, '&apos;');
 }
 
+function stripEmojis(text: string): string {
+  return text
+    .replace(/[\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDC00-\uDFFF]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 // Representative high-definition portraits for video thumbnails
 const fallbackThumbnails = [
   'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80',
@@ -26,8 +33,9 @@ export function generateSitemapXml(): string {
 
   const videoEntries = VIDEOS.map((video, index) => {
     const thumb = fallbackThumbnails[index % fallbackThumbnails.length];
-    // Create descriptive bilingual title and sanitized description
-    const shortDesc = video.description.replace(/[\n\r]+/g, ' ').slice(0, 160);
+    // Create descriptive bilingual title and sanitized description (strip emojis)
+    const rawDesc = video.description.replace(/[\n\r]+/g, ' ');
+    const shortDesc = stripEmojis(rawDesc).slice(0, 160);
     const videoTitle = `Gisela - Reel #${index + 1} | Viral Short-Form Video (지셀라 숏폼)`;
 
     return `  <url>
@@ -40,10 +48,9 @@ export function generateSitemapXml(): string {
       <video:title>${escapeXml(videoTitle)}</video:title>
       <video:description>${escapeXml(shortDesc)}</video:description>
       <video:content_loc>${escapeXml(video.url)}</video:content_loc>
-      <video:player_loc allow_embed="yes" autoplay="ap=1">${escapeXml(`${domain}/#${video.id}`)}</video:player_loc>
       <video:publication_date>${lastmod}</video:publication_date>
       <video:family_friendly>yes</video:family_friendly>
-      <video:uploader info="${domain}/">Gisela (@gisela08.07)</video:uploader>
+      <video:uploader info="${domain}/">Gisela</video:uploader>
       <video:tag>Gisela</video:tag>
       <video:tag>지셀라</video:tag>
       <video:tag>숏폼</video:tag>
