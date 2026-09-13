@@ -27,6 +27,7 @@ export default function App() {
           <Header />
           
           <main className="flex-1 pt-16">
+            <h1 className="sr-only">GISELA PRIVÉ | Official Short Videos & Fashion Reels</h1>
             <HeroProfile />
             <VideoCarousel />
             <VideoFeed />
